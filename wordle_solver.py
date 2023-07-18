@@ -6,37 +6,7 @@
 # but I was curious how well it worked!
 
 import re  # gotta have regex ;)
-from os import system # to clear screen
-
-# Pulled from https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
-frequencies = {
-    "e": 11.1607,
-    "a": 8.4966,
-    "r": 7.5809,
-    "i": 7.5448,
-    "o": 7.1635,
-    "t": 6.9509,
-    "n": 6.6544,
-    "s": 5.7351,
-    "l": 5.4893,
-    "c": 4.5388,
-    "u": 3.6308,
-    "d": 3.3844,
-    "p": 3.1671,
-    "m": 3.0129,
-    "h": 3.0034,
-    "g": 2.4705,
-    "b": 2.0720,
-    "f": 1.8121,
-    "y": 1.7779,
-    "w": 1.2899,
-    "k": 1.1016,
-    "v": 1.0074,
-    "x": 0.2902,
-    "z": 0.2722,
-    "j": 0.1965,
-    "q": 0.1962,
-}
+import frequency
 
 # This defines the current known word letters. Is filled in by the "regexr"
 word_match = ["." for i in range(5)]
@@ -49,13 +19,13 @@ search_string = "^"
 # Wordlist is custom created from a copy of the Oxford dictionary I downloaded and regexed a bit to get unique, mostly cleaned 5 letter words
 def gen_wordlist():
     word_weights = {}
-    with open("bigwordlist", "r") as words:
+    with open("dictionary.txt", "r") as words:
         for line in words.readlines():
             word = line.lower().replace("\n", "")
             weight = 0
             try: 
                 for letter in set(word):
-                    weight += frequencies[letter]
+                    weight += frequency.frequencies[letter]
                 word_weights[word] = weight
             # Protect from failure of "dirty" wordlists (punctuation, accented characters,etc)
             except KeyError:
@@ -127,7 +97,7 @@ def run_test():
     tries = 0
     distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
 
-    with open("wordlelist1", "r") as game:
+    with open("tests/wordle_old_solutions", "r") as game:
         for line in game.readlines():
             # New game for gamecount
             games += 1
@@ -144,7 +114,10 @@ def run_test():
             word_match = ["." for i in range(5)]
             for attempts in range(6):
                 tries += 1
-                guess = guesser(words)[1]
+                try:
+                    guess = guesser(words)[1]
+                except IndexError:
+                    break
                 if guess == answer:
                     wins += 1
                     distribution[attempts+1] += 1
