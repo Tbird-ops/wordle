@@ -116,6 +116,8 @@ def run_test():
                 tries += 1
                 try:
                     guess = guesser(words)[1]
+                # TODO build this out to understand why it failed to guess
+                # TODO REMOVE 'ELMER' from wordlist
                 except IndexError:
                     break
                 if guess == answer:
@@ -157,7 +159,8 @@ def main(test=0):
         print(f"Here is the best guess to start '{guess[1]}'\n")
         
         # Learn for next round
-        for _ in range(5):
+        # TODO until my guesser gets better, need more attempts than 6 due to some word failures
+        while True:
             good, bad, exact = questionaire()
             comparison = re.compile(regexr(good, bad, exact))
             words = sifter(comparison, words)
